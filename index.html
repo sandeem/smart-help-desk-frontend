@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Help Desk | AI Support</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        .chat-container { width: 450px; background: white; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); overflow: hidden; display: flex; flex-direction: column; }
+        .header { background: #1e3a8a; color: white; padding: 20px; text-align: center; font-weight: bold; font-size: 1.2rem; }
+        .chat-box { flex: 1; padding: 20px; overflow-y: auto; height: 350px; border-bottom: 1px solid #eee; }
+        .message { margin-bottom: 15px; line-height: 1.4; padding: 10px; border-radius: 8px; font-size: 0.95rem; }
+        .user-msg { background: #dbeafe; color: #1e3a8a; align-self: flex-end; }
+        .ai-msg { background: #f3f4f6; color: #374151; }
+        .input-area { display: flex; padding: 15px; gap: 10px; }
+        input { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 6px; outline: none; }
+        button { background: #1e3a8a; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; transition: 0.3s; }
+        button:hover { background: #1d4ed8; }
+        .source { font-size: 0.75rem; color: #6b7280; margin-top: 5px; font-style: italic; }
+    </style>
+</head>
+<body>
+
+<div class="chat-container">
+    <div class="header">Smart Help Desk 🤖</div>
+    <div class="chat-box" id="chatBox">
+        <div class="message ai-msg">Hello! I'm your AI assistant. How can I help you today?</div>
+    </div>
+    <div class="input-area">
+        <input type="text" id="userInput" placeholder="Ask a question...">
+        <button onclick="askQuestion()">Send</button>
+    </div>
+</div>
+
+<script>
+    // Application Load Balancer (ALB) DNS name fronting the EC2 query API.
+    const API_URL = "http://helpdesk-alb-89680967.us-east-1.elb.amazonaws.com";
+
+    async function askQuestion() {
+        const input = document.getElementById('userInput');
+        const chatBox = document.getElementById('chatBox');
+        const question = input.value;
+        if (!question) return;
+
+        // 1. Add user message to UI
+        chatBox.innerHTML += `<div class="message user-msg">${question}</div>`;
+        input.value = "";
+        chatBox.scrollTop = chatBox.scrollHeight;
+
+        try {
+            // 2. Call AWS Lambda
+            const response = await fetch(API_URL, {
+                method: "POST",
+                body: JSON.stringify({ question: question }),
+                headers: { "Content-Type": "application/json" }
+            });
+
+            const data = await response.json();
+
+            // 3. Add AI response to UI
+            chatBox.innerHTML += `
+                <div class="message ai-msg">
+                    ${data.answer}
+                    <div class="source">Source confidence: ${data.confidence}</div>
+                </div>`;
+        } catch (error) {
+            chatBox.innerHTML += `<div class="message ai-msg" style="color: red;">Error: Could not reach the AI. Make sure you set the API_URL (ALB DNS) correctly.</div>`;
+        }
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+</script>
+
+</body>
+</html>
