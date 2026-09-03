@@ -33,8 +33,9 @@
 </div>
 
 <script>
-    // Application Load Balancer (ALB) DNS name fronting the EC2 query API.
-    const API_URL = "http://helpdesk-alb-896698967.us-east-1.elb.amazonaws.com";
+    // Vercel rewrite proxy: browser calls same-origin HTTPS /api/, Vercel forwards to the ALB.
+    // This avoids mixed-content blocking (HTTPS page -> HTTP API).
+    const API_URL = "/api/";
 
     async function askQuestion() {
         const input = document.getElementById('userInput');
