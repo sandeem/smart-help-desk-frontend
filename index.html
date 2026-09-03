@@ -6,9 +6,9 @@
     <title>Smart Help Desk | AI Support</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; }
-        .chat-container { width: 450px; background: white; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); overflow: hidden; display: flex; flex-direction: column; }
-        .header { background: #1e3a8a; color: white; padding: 20px; text-align: center; font-weight: bold; font-size: 1.2rem; }
-        .chat-box { flex: 1; padding: 20px; overflow-y: auto; height: 350px; border-bottom: 1px solid #eee; }
+        .chat-container { width: 450px; max-width: 95vw; background: white; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); overflow: hidden; display: flex; flex-direction: column; max-height: 95vh; }
+        .header { background: #1e3a8a; color: white; padding: 20px; text-align: center; font-weight: bold; font-size: 1.2rem; flex-shrink: 0; }
+        .chat-box { flex: 1 1 auto; padding: 20px; overflow-y: auto; min-height: 0; border-bottom: 1px solid #eee; }
         .message { margin-bottom: 15px; line-height: 1.4; padding: 10px; border-radius: 8px; font-size: 0.95rem; }
         .user-msg { background: #dbeafe; color: #1e3a8a; align-self: flex-end; }
         .ai-msg { background: #f3f4f6; color: #374151; white-space: pre-wrap; word-break: break-word; }
