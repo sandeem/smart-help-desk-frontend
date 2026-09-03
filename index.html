@@ -78,10 +78,23 @@
             // Option A: render the retrieved sources as a small list so the [n]
             // citation markers in the answer resolve to actual content.
             let sourcesHtml = "";
-            const sources = (data.sources || []).slice(0, 3); // match the 3-citation cap
-            if (sources.length > 0) {
+            const allSources = data.sources || [];
+            // Show ONLY the sources actually cited in the answer (e.g. [1], [5]),
+            // in the order they appear — so the Sources list always matches the
+            // [n] markers in the answer text. Falls back to first 3 if no markers.
+            const citedIdx = [];
+            const citeRe = /\[(\d+)\]/g;
+            let citeMatch;
+            while ((citeMatch = citeRe.exec(data.answer)) !== null) {
+                const idx = parseInt(citeMatch[1], 10) - 1;
+                if (idx >= 0 && idx < allSources.length && !citedIdx.includes(idx)) {
+                    citedIdx.push(idx);
+                }
+            }
+            const shownSources = citedIdx.length > 0 ? citedIdx.map(i => allSources[i]) : allSources.slice(0, 3);
+            if (shownSources.length > 0) {
                 sourcesHtml = `<div class="sources"><div class="sources-title">Sources</div>` +
-                    sources.map((s, i) =>
+                    shownSources.map((s, i) =>
                         `<div class="source-item">[${i + 1}] ${escapeHtml(s)}</div>`
                     ).join("") + `</div>`;
             }
