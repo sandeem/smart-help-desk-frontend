@@ -93,10 +93,13 @@
             }
             const shownSources = citedIdx.length > 0 ? citedIdx.map(i => allSources[i]) : allSources.slice(0, 3);
             if (shownSources.length > 0) {
+                // Label each source with its ACTUAL citation number (e.g. [2]) so it
+                // matches the [n] marker in the answer — not its position in this list.
                 sourcesHtml = `<div class="sources"><div class="sources-title">Sources</div>` +
-                    shownSources.map((s, i) =>
-                        `<div class="source-item">[${i + 1}] ${escapeHtml(s)}</div>`
-                    ).join("") + `</div>`;
+                    shownSources.map((s, i) => {
+                        const label = citedIdx.length > 0 ? (citedIdx[i] + 1) : (i + 1);
+                        return `<div class="source-item">[${label}] ${escapeHtml(s)}</div>`;
+                    }).join("") + `</div>`;
             }
 
             chatBox.innerHTML += `<div class="message ai-msg">${data.answer.trim()}${sourcesHtml}${footer}</div>`;
